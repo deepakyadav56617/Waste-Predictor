@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+ <script src="https://unpkg.com/@tensorflow/tfjs-automl"></script>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ <link rel="stylesheet" type="text/css" href="/static/Canteen/add_item/add_itemhome.css">
+    <!-- Bootstrap CSS -->
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+ <style type="text/css">
+   <style type="text/css">
+#upload {
+    opacity: 0;
+}
+#display-4{
+  text-align: center;
+}
+#upload-label {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+}
+#new{
+    padding-bottom: 20px;
+}
+.image-area {
+    border: 2px dashed rgba(255, 255, 255, 0.7);
+    padding: 1rem;
+    position: relative;
+}
+
+.image-area::before {
+    content: 'Uploaded image result';
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+    z-index: 1;
+}
+.image-area img {
+    z-index: 2;
+    position: relative;
+}
+body {
+    min-height: 100vh;
+    background-color: #757f9a;
+    background-image: linear-gradient(147deg, #757f9a 0%, #d7dde8 100%);
+}
+.button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+#first{
+  text-align: center;
+  font-size: 50px;
+  color: ##509f2c;
+  font-weight: bold; 
+
+}
+#output{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20%;
+  height: 20%;
+  margin-top:0;
+}
+.paglu{
+  padding-right: 500px;
+  padding-left: 500px;
+}
+</style>
+ </style>
+ <title>Waste Predictor</title>
+
+</head>
+
+<body>
+    <div class="container py-5">
+
+    <!-- For demo purpose -->
+    <header class="text-white text-center">
+        <h1 class="display-4" style="text-align:center">Waste Predictor</h1>
+    </header>
+
+
+    <div class="row py-4">
+        <div class="col-lg-6 mx-auto">
+
+            <!-- Upload image input-->
+            <div class="input-group mb-3 px-2 py-2 rounded-pill shadow-sm new">
+              <div class="col-md-12 text-center">
+                 <p><label class="btn btn-primary btn-lg btn-block" for="file" style="cursor: pointer;">Upload Image</label></p>
+              </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+ <p><input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;"></p>
+<div class="imgout">
+ <p><img id="output" width="200" /></p>
+</div>
+ <div id='result'></div>
+<div class="text-center paglu">
+      <button onclick="remove()" type="button" class="btn btn-danger btn-lg btn-block">Try Again</button>
+    </div>
+ <script>
+  var loadFile = function (event) {
+   var image = document.getElementById('output');
+   image.src = URL.createObjectURL(event.target.files[0]);
+   run();
+  };
+  function remove() {
+   let el = document.getElementById('first')
+   el.remove()
+   var image = document.getElementById('output');
+   image.src = '';
+  }
+  async function run() {
+   const model = await tf.automl.loadImageClassification('model.json');
+   const image = document.getElementById('output');
+   const predictions = await model.classify(image);
+   console.log(predictions);
+   let prob1 = predictions[0]['prob']
+   let label1 = predictions[0]['label']
+   let prob2 = predictions[1]['prob']
+   let label2 = predictions[1]['label']
+
+
+   // Show the resulting object on the page.
+
+   const pre = document.createElement('pre');
+   pre.setAttribute("id", "first");
+   pre.textContent = JSON.stringify(predictions, null, 2);
+   if (prob1 > prob2)
+    pre.textContent = "Compostable"
+   else
+    pre.textContent = "Recyclable"
+   document.getElementById("result").appendChild(pre);
+
+  }
+ </script>
+</body>
+
+</html>
